@@ -7,8 +7,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// serve frontend static files from parent folder
-app.use(express.static(path.join(__dirname, '..')));
+// serve frontend static files from public folder
+app.use(express.static(path.join(__dirname, 'public')));
 
 // connect to MongoDB if available
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/shopeasy';
@@ -18,5 +18,10 @@ mongoose.connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true 
 
 const productsRouter = require('./routes/products');
 app.use('/api/products', productsRouter);
+
+if (require.main === module) {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
+}
 
 module.exports = app;
