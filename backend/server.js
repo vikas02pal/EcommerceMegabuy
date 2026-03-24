@@ -19,6 +19,17 @@ mongoose.connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true 
 const productsRouter = require('./routes/products');
 app.use('/api/products', productsRouter);
 
+// root route must serve frontend index on Vercel and local
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// optional catch-all for client-side routing
+app.get('*', (req, res) => {
+  if (req.path.startsWith('/api')) return res.status(404).json({ error: 'Not found' });
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
 if (require.main === module) {
   const PORT = process.env.PORT || 5000;
   app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
