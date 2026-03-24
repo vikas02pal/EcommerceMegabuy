@@ -1,16 +1,4 @@
 {
   "version": 2,
-  "root": "backend",
-  "builds": [
-    {
-      "src": "server.js",
-      "use": "@vercel/node"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/server.js"
-    }
-  ]
+  "buildCommand": "npm install"
 }
