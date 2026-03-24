@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MegaBuy - Online Shopping Store</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- LOGIN PAGE -->
+<div id="loginPage" class="login-container">
+    <div class="login-box">
+        <h1>MegaBuy</h1>
+        <p class="tagline">Your Ultimate Online Shopping Destination</p>
+        <form id="loginForm">
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <button type="submit">Login</button>
+        </form>
+        <p class="signup">Don't have account? <span onclick="alert('Sign up coming soon!')">Sign up</span></p>
+    </div>
+</div>
+
+<!-- MAIN SHOPPING PAGE (Hidden initially) -->
+<div id="mainPage" class="main-hidden">
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="logo">MegaBuy</div>
+            <div class="menu-toggle" id="menuToggle">☰</div>
+            <div class="search-wrapper">
+                <input type="text" id="searchBox" class="search-box" placeholder="Search for products..." autocomplete="off">
+                <div id="suggestions" class="suggestions-dropdown"></div>
+            </div>
+            <div class="navbar-icons">
+                <div class="nav-item">
+                    <span id="userDisplay" class="user-name">User</span>
+                    <button id="logoutBtn" class="logout-btn">Logout</button>
+                </div>
+                <div class="nav-item">
+                    <button id="showShopBtn" class="nav-button">Shop</button>
+                    <button id="showWishlistBtn" class="nav-button">Wishlist</button>
+                    <button id="showOrdersBtn" class="nav-button">Orders</button>
+                </div>
+                <div class="nav-item">
+                    <span class="cart-icon">🛒</span>
+                    <span id="cartCount" class="cart-count">0</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- FILTERS SIDEBAR -->
+    <div class="container">
+        <aside class="filter-sidebar">
+            <h3>Filters</h3>
+            
+            <div class="filter-group">
+                <h4>Category</h4>
+                <label><input type="checkbox" name="category" value="Mobile Phones" onchange="applyFilters()"> Mobile Phones</label>
+                <label><input type="checkbox" name="category" value="Laptops" onchange="applyFilters()"> Laptops</label>
+                <label><input type="checkbox" name="category" value="Headphones" onchange="applyFilters()"> Headphones</label>
+                <label><input type="checkbox" name="category" value="Shoes" onchange="applyFilters()"> Shoes</label>
+                <label><input type="checkbox" name="category" value="Clothing" onchange="applyFilters()"> Clothing</label>
+                <label><input type="checkbox" name="category" value="Watches" onchange="applyFilters()"> Watches</label>
+                <label><input type="checkbox" name="category" value="Home Appliances" onchange="applyFilters()"> Home Appliances</label>
+                <label><input type="checkbox" name="category" value="Books & Media" onchange="applyFilters()"> Books & Media</label>
+                <label><input type="checkbox" name="category" value="Sports & Fitness" onchange="applyFilters()"> Sports & Fitness</label>
+            </div>
+
+            <div class="filter-group">
+                <h4>Price Range</h4>
+                <input type="range" id="priceRange" min="0" max="50000" value="50000" onchange="applyFilters()">
+                <p>Max: ₹<span id="priceValue">50000</span></p>
+            </div>
+
+            <div class="filter-group">
+                <h4>Sort By</h4>
+                <select id="sortBy" onchange="applyFilters()">
+                    <option value="relevance">Relevance</option>
+                    <option value="price-low">Price: Low to High</option>
+                    <option value="price-high">Price: High to Low</option>
+                    <option value="rating">Rating</option>
+                    <option value="newest">Newest</option>
+                </select>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content" id="shopSection">
+            <div class="results-header">
+                <h2 id="resultsTitle">All Products</h2>
+                <span id="resultCount" class="result-count"></span>
+            </div>
+            <section id="productList" class="product-list"></section>
+            <div id="paginationControls" class="pagination-controls"></div>
+        </main>
+
+        <!-- WISHLIST SECTION -->
+        <main class="main-content" id="wishlistSection" style="display:none;">
+            <div class="results-header">
+                <h2>My Wishlist</h2>
+            </div>
+            <section id="wishlistList" class="product-list"></section>
+        </main>
+
+        <!-- ORDERS SECTION -->
+        <main class="main-content" id="ordersSection" style="display:none;">
+            <div class="results-header">
+                <h2>Order History</h2>
+            </div>
+            <section id="ordersList" class="orders-list"></section>
+        </main>
+
+        <!-- SHOPPING CART -->
+        <aside class="cart-sidebar">
+            <h3>🛒 Cart</h3>
+            <div id="cartItems" class="cart-items"></div>
+            <div class="cart-summary">
+                <p>Subtotal: <strong id="subtotal">₹0</strong></p>
+                <p>Delivery: <strong id="delivery">FREE</strong></p>
+                <p class="cart-total">Total: <strong id="totalPrice">₹0</strong></p>
+                <button id="optimizeCartBtn" class="checkout-btn">Optimize Cart</button>
+                <button id="checkoutBtn" class="checkout-btn">Proceed to Checkout</button>
+                <button id="clearCartBtn" class="clear-cart-btn">Clear Cart</button>
+            </div>
+        </aside>
+    </div>
+</div>
+
+<button id="scrollTopBtn" title="Go to top">↑</button>
+
+<!-- PRODUCT DETAILS MODAL -->
+<div id="productModal" class="modal" style="display:none;">
+    <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <div id="modalBody"></div>
+    </div>
+</div>
+
+<!-- CHECKOUT FORM MODAL -->
+<div id="checkoutModal" class="modal" style="display:none;">
+    <div class="modal-content" style="max-width: 600px;">
+        <span class="close-modal">&times;</span>
+        <h2 style="margin-bottom: 24px; border-bottom: 2px solid #ff6b35; padding-bottom: 12px;">Checkout</h2>
+        <form id="checkoutForm">
+            <!-- Delivery Details -->
+            <div style="margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid #e0e0e0;">
+                <h3 style="font-size: 16px; color: #004e89; margin-bottom: 16px; font-weight: 600;">Delivery Details</h3>
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 500; color: #333;">Full Name</label>
+                    <input type="text" id="checkoutName" placeholder="Enter your full name" required style="width: 100%; padding: 10px 12px; border: 1.5px solid #ddd; border-radius: 6px; font-size: 14px; transition: all 0.3s ease;" onfocus="this.style.borderColor='#ff6b35'; this.style.boxShadow='0 0 0 3px rgba(255,107,53,0.1)';" onblur="this.style.borderColor='#ddd'; this.style.boxShadow='none';">
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 8px; font-weight: 500; color: #333;">Delivery Address</label>
+                    <textarea id="checkoutAddress" placeholder="Enter your complete delivery address" required style="width: 100%; padding: 10px 12px; border: 1.5px solid #ddd; border-radius: 6px; font-size: 14px; height: 90px; resize: vertical; font-family: inherit; transition: all 0.3s ease;" onfocus="this.style.borderColor='#ff6b35'; this.style.boxShadow='0 0 0 3px rgba(255,107,53,0.1)';" onblur="this.style.borderColor='#ddd'; this.style.boxShadow='none';"></textarea>
+                </div>
+            </div>
+
+            <!-- Payment Method Selection -->
+            <div style="margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid #e0e0e0;">
+                <h3 style="font-size: 16px; color: #004e89; margin-bottom: 16px; font-weight: 600;">Payment Method</h3>
+                <div style="display: flex; gap: 24px;">
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 500;">
+                        <input type="radio" name="paymentMethod" value="card" checked onchange="togglePaymentForm();" style="cursor: pointer; width: 18px; height: 18px; accent-color: #ff6b35;">
+                        <span style="color: #333;">Card Payment</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 500;">
+                        <input type="radio" name="paymentMethod" value="upi" onchange="togglePaymentForm();" style="cursor: pointer; width: 18px; height: 18px; accent-color: #ff6b35;">
+                        <span style="color: #333;">UPI</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 500;">
+                        <input type="radio" name="paymentMethod" value="cod" onchange="togglePaymentForm();" style="cursor: pointer; width: 18px; height: 18px; accent-color: #ff6b35;">
+                        <span style="color: #333;">Cash on Delivery</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Card Payment Form -->
+            <div id="cardPaymentForm" style="margin-bottom: 24px; padding: 20px; background: #f9f9f9; border-radius: 8px; border-left: 4px solid #ff6b35;">
+                <h4 style="margin-bottom: 16px; color: #004e89; font-weight: 600;">Card Details</h4>
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 500; color: #333;">Cardholder Name</label>
+                    <input type="text" id="cardName" placeholder="Name on card" style="width: 100%; padding: 10px 12px; border: 1.5px solid #ddd; border-radius: 6px; font-size: 14px; transition: all 0.3s ease;" onfocus="this.style.borderColor='#ff6b35';" onblur="this.style.borderColor='#ddd';">
+                </div>
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 500; color: #333;">Card Number</label>
+                    <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19" style="width: 100%; padding: 10px 12px; border: 1.5px solid #ddd; border-radius: 6px; font-size: 14px; letter-spacing: 2px; transition: all 0.3s ease;" onfocus="this.style.borderColor='#ff6b35';" onblur="this.style.borderColor='#ddd';">
+                </div>
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 16px;">
+                    <div>
+                        <label style="display: block; margin-bottom: 8px; font-weight: 500; color: #333;">Expiry Date</label>
+                        <input type="text" id="cardExpiry" placeholder="MM/YY" maxlength="5" style="width: 100%; padding: 10px 12px; border: 1.5px solid #ddd; border-radius: 6px; font-size: 14px; transition: all 0.3s ease;" onfocus="this.style.borderColor='#ff6b35';" onblur="this.style.borderColor='#ddd';">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 8px; font-weight: 500; color: #333;">CVV</label>
+                        <input type="text" id="cardCVV" placeholder="123" maxlength="3" style="width: 100%; padding: 10px 12px; border: 1.5px solid #ddd; border-radius: 6px; font-size: 14px; transition: all 0.3s ease;" onfocus="this.style.borderColor='#ff6b35';" onblur="this.style.borderColor='#ddd';">
+                    </div>
+                </div>
+            </div>
+
+            <!-- UPI Payment Form -->
+            <div id="upiPaymentForm" style="display: none; margin-bottom: 24px; padding: 20px; background: #f9f9f9; border-radius: 8px; border-left: 4px solid #f7b801;">
+                <h4 style="margin-bottom: 16px; color: #004e89; font-weight: 600;">UPI Details</h4>
+                <div>
+                    <label style="display: block; margin-bottom: 8px; font-weight: 500; color: #333;">UPI ID</label>
+                    <input type="text" id="upiId" placeholder="username@upi" style="width: 100%; padding: 10px 12px; border: 1.5px solid #ddd; border-radius: 6px; font-size: 14px; transition: all 0.3s ease;" onfocus="this.style.borderColor='#f7b801';" onblur="this.style.borderColor='#ddd';">
+                    <p style="font-size: 12px; color: #666; margin-top: 8px;">📱 You will receive a prompt to authenticate this transaction on your UPI app</p>
+                </div>
+            </div>
+
+            <!-- Order Summary -->
+            <div style="padding: 16px; background: #f9f9f9; border-radius: 8px; margin-bottom: 24px;">
+                <h4 style="margin-bottom: 12px; color: #004e89; font-weight: 600;">Order Summary</h4>
+                <div style="display: flex; justify-content: space-between; font-size: 13px; color: #666; margin-bottom: 8px;">
+                    <span>Subtotal:</span>
+                    <span id="subtotalDisplay">₹0</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 13px; color: #666; margin-bottom: 12px;">
+                    <span>Shipping:</span>
+                    <span style="color: #4caf50; font-weight: 600;">FREE</span>
+                </div>
+                <div style="border-top: 1px solid #ddd; padding-top: 12px; display: flex; justify-content: space-between; font-size: 16px; font-weight: 700; color: #004e89;">
+                    <span>Total:</span>
+                    <span id="totalDisplay" style="color: #ff6b35;">₹0</span>
+                </div>
+            </div>
+
+            <button type="submit" style="width: 100%; padding: 14px; background: linear-gradient(135deg, #ff6b35, #ff8c42); color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 18px rgba(255,107,53,0.4)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(255,107,53,0.3)';">
+                Place Order
+            </button>
+        </form>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
